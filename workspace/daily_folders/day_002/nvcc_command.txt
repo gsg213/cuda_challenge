@@ -1,0 +1,1 @@
+nvcc src/main.cu src/kernels.cu -I include/ -o app2
