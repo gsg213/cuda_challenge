@@ -1,0 +1,26 @@
+services:
+  cuda-container:
+    image: nvidia/cuda:12.6.0-cudnn-devel-ubuntu22.04
+    container_name: cuda-container
+    # user: "${UID:-1000}:${GID:-1000}"
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./workspace:/workspace
+      - /dev/shm:/dev/shm
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw  # For GUI apps
+      - ${HOME}/.Xauthority:/root/.Xauthority:rw  # Add this line
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - QT_X11_NO_MITSHM=1  # Helps with Qt applications in containers
+      - XAUTHORITY=${XAUTH:-$HOME/.Xauthority}  # X11 authentication
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    working_dir: /workspace
